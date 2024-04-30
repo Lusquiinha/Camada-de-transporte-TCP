@@ -1,5 +1,5 @@
 import asyncio
-from tcputils import *
+from grader.tcputils import *
 
 
 class Servidor:
@@ -37,6 +37,10 @@ class Servidor:
             conexao = self.conexoes[id_conexao] = Conexao(self, id_conexao)
             # TODO: você precisa fazer o handshake aceitando a conexão. Escolha se você acha melhor
             # fazer aqui mesmo ou dentro da classe Conexao.
+            header = make_header(dst_port, src_port, seq_no, seq_no+1, FLAGS_ACK | FLAGS_SYN)
+            header_checksum = fix_checksum(header, dst_addr, src_addr)
+            self.rede.enviar(header_checksum, src_addr)
+
             if self.callback:
                 self.callback(conexao)
         elif id_conexao in self.conexoes:
